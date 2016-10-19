@@ -1,0 +1,101 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+imports:
+  - http://www.getcloudify.org/spec/cloudify/3.4/types.yaml
+  - http://www.getcloudify.org/spec/openstack-plugin/1.4/plugin.yaml
+
+inputs:
+
+  keystone_username:
+    default: ''
+    type: string
+
+  keystone_password:
+    default: ''
+    type: string
+
+  keystone_tenant_name:
+    default: ''
+    type: string
+
+  keystone_url:
+    default: ''
+    type: string
+
+  region1:
+    default: ''
+    type: string
+
+  region2:
+    default: ''
+    type: string
+
+  nova_url:
+    default: ''
+    type: string
+
+  neutron_url:
+    default: ''
+    type: string
+
+  region1_openstack_configuration:
+    default:
+      username: { get_input: keystone_username }
+      password: { get_input: keystone_password }
+      tenant_name: { get_input: keystone_tenant_name }
+      auth_url: { get_input: keystone_url }
+      region: { get_input: region1 }
+      nova_url: { get_input: nova_url }
+      neutron_url: { get_input: neutron_url }
+
+  region2_openstack_configuration:
+    default:
+      username: { get_input: keystone_username }
+      password: { get_input: keystone_password }
+      tenant_name: { get_input: keystone_tenant_name }
+      auth_url: { get_input: keystone_url }
+      region: { get_input: region2 }
+      nova_url: { get_input: nova_url }
+      neutron_url: { get_input: neutron_url }
+
+  use_existing_example_openstack_volume1:
+    type: boolean
+    default: false
+
+  example_openstack_volume1:
+    type: string
+    default: 'example-openstack-volume1'
+
+  volume1_size:
+    default: 2
+
+  use_existing_example_openstack_volume2:
+    type: boolean
+    default: false
+
+  example_openstack_volume2:
+    type: string
+    default: 'example-openstack-volume2'
+
+  volume2_size:
+    default: 2
+
+node_templates:
+
+  example_openstack_volume_region1:
+    type: cloudify.openstack.nodes.Volume
+    properties:
+      openstack_config: { get_input: region1_openstack_configuration }
+      use_external_resource: { get_input: use_existing_example_openstack_volume1 }
+      resource_id: { get_input: example_openstack_volume1 }
+      volume:
+        size: { get_input: volume1_size }
+
+  example_openstack_volume_region2:
+    type: cloudify.openstack.nodes.Volume
+    properties:
+      openstack_config: { get_input: region2_openstack_configuration }
+      use_external_resource: { get_input: use_existing_example_openstack_volume2 }
+      resource_id: { get_input: example_openstack_volume2 }
+      volume:
+        size: { get_input: volume2_size }
